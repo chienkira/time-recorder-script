@@ -17,6 +17,7 @@ git clone https://github.com/chienkira/time-recorder-script.git ~/.KOT_script
 2. aliasを登録しておく
 
 `~/.bash_profile`ファイルを開いて、以下の内容を入れておいてください。
+`your_id`と`your_password`の箇所は、ご**自分のログイン情報**に書き換えてください！
 ```
 alias kot_in="ruby ~/.KOT_script/kot.rb --user=your_id --pass=your_password --action=in"
 alias kot_out="ruby ~/.KOT_script/kot.rb --user=your_id --pass=your_password --action=out"
@@ -30,7 +31,7 @@ source ~/.bash_profile
 
 ## 使い方を教えて！
 
-ターミナルのどこでも以下のコマンド1個で打刻できちゃいます！
+すごく簡単です！ターミナルのどこでも以下のコマンド1個で打刻できちゃいます！
 
 ```bash
 # To Clock in - 出勤打刻したい場合
