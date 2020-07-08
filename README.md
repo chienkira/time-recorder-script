@@ -20,7 +20,14 @@ alias kot_in="ruby ~/.KOT_script/kot.rb --user=your_id --pass=your_password --ac
 alias kot_out="ruby ~/.KOT_script/kot.rb --user=your_id --pass=your_password --action=out"
 ```
 
+~/.bash_profileをリーロード
+```bash
+source ~/.bash_profile
+```
+
 ## 使い方を教えて！
+
+ターミナルのどこでも以下のコマンド1個で打刻できちゃいます！
 
 ```bash
 # To Clock in - 出勤打刻したい場合
@@ -29,4 +36,3 @@ kot_in
 # To Clock out - 退勤打刻したい場合
 kot_out
 ```
-
