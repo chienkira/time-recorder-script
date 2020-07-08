@@ -1,20 +1,19 @@
 # time-recorder-script
 
 ## 利用に何が必要？
+
 1. rubyが実行できる環境
 Macの場合、デフォルトruby（2.xバージョン）入っているので、すぐにこのスクリプトを利用できる
-1. 勤怠システムのログイン情報
+2. 勤怠システムのログイン情報
 
 ## インストール手順を教えて！
 
 1. スクリプトをダウンロード
-
 ```bash
 git clone https://github.com/chienkira/time-recorder-script.git ~/.KOT_script
 ```
 
-1. aliasを登録しておく
-
+2. aliasを登録しておく
 ~/.bash_profileを開いて、以下の内容を入れておいてください。
 ```
 alias kot_in="ruby ~/.KOT_script/kot.rb --user=your_id --pass=your_password --action=in"
