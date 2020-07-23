@@ -4,10 +4,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"runtime"
+
+	"github.com/tidwall/gjson"
 )
 
 type Client struct {
@@ -48,19 +51,25 @@ func (c *Client) newRequest(method, path string, body io.Reader) (*http.Request,
 	return req, nil
 }
 
-func (c *Client) post(path string, body io.Reader) (map[string]interface{}, error) {
+func (c *Client) postForm(path string, body io.Reader) (gjson.Result, error) {
 	req, err := c.newRequest("POST", path, body)
 	if err != nil {
 		c.logger.Panicln(err)
-		return nil, err
+		return gjson.Result{}, err
 	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	res, err := c.HTTPClient.Do(req)
 	if err != nil || res.StatusCode != http.StatusOK {
 		c.logger.Panicln(res)
-		return nil, err
+		return gjson.Result{}, err
 	}
-	var json_res map[string]interface{}
-	decodeBody(res, &json_res)
-	c.logger.Println(json_res)
+	defer res.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		c.logger.Panicln(err)
+		return gjson.Result{}, err
+	}
+	bodyString := string(bodyBytes)
+	json_res := gjson.Parse(bodyString)
 	return json_res, nil
 }
