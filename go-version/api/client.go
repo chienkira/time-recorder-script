@@ -1,12 +1,13 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"os"
 	"runtime"
 
@@ -31,12 +32,6 @@ func NewClient(baseUrl string, logger *log.Logger) *Client {
 	}
 }
 
-func decodeBody(res *http.Response, out interface{}) error {
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	return decoder.Decode(out)
-}
-
 func (c *Client) newRequest(method, path string, body io.Reader) (*http.Request, error) {
 	url := c.baseUrl + path
 	req, err := http.NewRequest(method, url, body)
@@ -51,18 +46,59 @@ func (c *Client) newRequest(method, path string, body io.Reader) (*http.Request,
 	return req, nil
 }
 
-func (c *Client) postForm(path string, body io.Reader) (gjson.Result, error) {
+func (c *Client) logRequest(req *http.Request) {
+	dump, _ := httputil.DumpRequestOut(req, true)
+	c.logger.Println(string(dump))
+}
+
+func (c *Client) logResponse(res *http.Response) {
+	dump, _ := httputil.DumpResponse(res, true)
+	c.logger.Println(string(dump))
+}
+
+func (c *Client) PostForm(path string, body io.Reader) (gjson.Result, error) {
 	req, err := c.newRequest("POST", path, body)
 	if err != nil {
 		c.logger.Panicln(err)
 		return gjson.Result{}, err
 	}
+
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	c.logRequest(req)
 	res, err := c.HTTPClient.Do(req)
+	c.logResponse(res)
 	if err != nil || res.StatusCode != http.StatusOK {
 		c.logger.Panicln(res)
 		return gjson.Result{}, err
 	}
+
+	defer res.Body.Close()
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		c.logger.Panicln(err)
+		return gjson.Result{}, err
+	}
+	bodyString := string(bodyBytes)
+	json_res := gjson.Parse(bodyString)
+	return json_res, nil
+}
+
+func (c *Client) Get(path string, query_params url.Values) (gjson.Result, error) {
+	req, err := c.newRequest("GET", path, nil)
+	if err != nil {
+		c.logger.Panicln(err)
+		return gjson.Result{}, err
+	}
+	req.URL.RawQuery = query_params.Encode()
+
+	c.logRequest(req)
+	res, err := c.HTTPClient.Do(req)
+	c.logResponse(res)
+	if err != nil || res.StatusCode != http.StatusOK {
+		c.logger.Panicln(res)
+		return gjson.Result{}, err
+	}
+
 	defer res.Body.Close()
 	bodyBytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {

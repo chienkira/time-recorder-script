@@ -1,7 +1,8 @@
-package api
+package user
 
 import (
 	"fmt"
+	"kot/api"
 	"net/url"
 	"strings"
 )
@@ -21,7 +22,7 @@ func Login(userid, password string) *User {
 	data.Set("page_id", "account_verify")
 	data.Set("account", userid)
 	data.Set("password", password)
-	res_data, _ := NewClient(API_BASE_URL, nil).postForm("", strings.NewReader(data.Encode()))
+	res_data, _ := api.NewClient(API_BASE_URL, nil).PostForm("", strings.NewReader(data.Encode()))
 	return &User{
 		Name:         res_data.Get("user_data.user.name").String(),
 		user_token:   res_data.Get("user_data.user.user_token").String(),
@@ -36,7 +37,7 @@ func ClockIn(user *User) {
 	data.Set("id", user.clock_in_id)
 	data.Set("user_token", user.user_token)
 	data.Set("token", user.auth_token)
-	res_data, _ := NewClient(API_BASE_URL, nil).postForm("", strings.NewReader(data.Encode()))
+	res_data, _ := api.NewClient(API_BASE_URL, nil).PostForm("", strings.NewReader(data.Encode()))
 	fmt.Println(res_data)
 }
 
@@ -45,6 +46,6 @@ func ClockOut(user *User) {
 	data.Set("id", user.clock_out_id)
 	data.Set("user_token", user.user_token)
 	data.Set("token", user.auth_token)
-	res_data, _ := NewClient(API_BASE_URL, nil).postForm("", strings.NewReader(data.Encode()))
+	res_data, _ := api.NewClient(API_BASE_URL, nil).PostForm("", strings.NewReader(data.Encode()))
 	fmt.Println(res_data)
 }
