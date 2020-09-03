@@ -47,13 +47,17 @@ func (c *Client) newRequest(method, path string, body io.Reader) (*http.Request,
 }
 
 func (c *Client) logRequest(req *http.Request) {
-	dump, _ := httputil.DumpRequestOut(req, true)
-	c.logger.Println(string(dump))
+	if os.Getenv("DEBUG") == "true" {
+		dump, _ := httputil.DumpRequestOut(req, true)
+		c.logger.Println(string(dump))
+	}
 }
 
 func (c *Client) logResponse(res *http.Response) {
-	dump, _ := httputil.DumpResponse(res, true)
-	c.logger.Println(string(dump))
+	if os.Getenv("DEBUG") == "true" {
+		dump, _ := httputil.DumpResponse(res, true)
+		c.logger.Println(string(dump))
+	}
 }
 
 func (c *Client) PostForm(path string, body io.Reader) (gjson.Result, error) {
