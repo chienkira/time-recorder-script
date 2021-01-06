@@ -9,14 +9,14 @@ import (
 )
 
 func main() {
-	ip := public_ip_client.GetIp()
-	if ip == "113.35.80.218" {
-		fmt.Println("No need to clock in or out as you're at office already")
+	if len(os.Args) < 2 {
+		fmt.Println("Please input action (IN or OUT) as argument!")
 		return
 	}
 
-	if len(os.Args) < 2 {
-		fmt.Println("Please input action (IN or OUT) as argument!")
+	ip := public_ip_client.GetIp()
+	if ip == "113.35.80.218" && !(len(os.Args) >= 3 && os.Args[2] == "--force") {
+		fmt.Println("No need to clock in or out as you're at office already")
 		return
 	}
 
